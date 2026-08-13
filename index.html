@@ -1,149 +1,136 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>汉峪金谷 P0 真实看板（腾讯）</title>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>汉峪金谷·新区调研作战看板</title>
 <style>
-  :root{--bg:#f5f7fb;--card:#fff;--ink:#1f2937;--sub:#6b7280;--line:#e5e7eb;--brand:#1d4ed8;--warn:#dc2626;--ok:#059669;--shadow:0 1px 3px rgba(16,24,40,.08);}
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55;}
-  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px;}
-  header.top{background:linear-gradient(135deg,#0f766e,#059669);color:#fff;border-radius:16px;padding:22px 26px;box-shadow:var(--shadow);}
-  header.top h1{margin:0 0 6px;font-size:22px;}
-  header.top .meta{font-size:13px;opacity:.92;}
-  header.top .meta span{margin-right:16px;}
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0;}
-  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);}
-  .kpi .v{font-size:26px;font-weight:700;color:var(--brand);}
-  .kpi .l{font-size:12px;color:var(--sub);margin-top:4px;}
-  .kpi.warn .v{color:var(--warn);}
-  .kpi.ok .v{color:var(--ok);}
-  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:var(--shadow);}
-  section h2{margin:0 0 4px;font-size:17px;}
-  section .desc{font-size:13px;color:var(--sub);margin:0 0 16px;}
-  .heat{display:grid;gap:4px;justify-content:center;margin:8px 0 4px;}
-  .cell{width:62px;height:62px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;cursor:default;}
-  .cell small{font-size:10px;font-weight:500;opacity:.85;}
-  .legend{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--sub);margin-top:8px;}
-  .legend .bar{width:160px;height:10px;border-radius:5px;background:linear-gradient(90deg,#e6fffb,#059669);}
-  .bar-row{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:10px;margin:7px 0;}
-  .bar-row .name{font-size:13px;text-align:right;}
-  .bar-track{background:#f1f5f9;border-radius:6px;height:18px;overflow:hidden;}
-  .bar-fill{height:100%;background:var(--brand);border-radius:6px;}
-  .bar-fill.zero{background:var(--warn);}
-  .bar-row .val{font-size:13px;font-weight:600;}
-  .bar-row .val.gap{color:var(--warn);font-size:11px;}
-  .calls{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  .call{border-radius:12px;padding:14px 16px;border:1px solid var(--line);}
-  .call.blank{background:#fff7ed;border-color:#fed7aa;}
-  .call.gap{background:#fef2f2;border-color:#fecaca;}
-  .call h3{margin:0 0 6px;font-size:14px;}
-  .call p{margin:0;font-size:13px;color:#374151;}
-  .rule{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;font-size:13px;color:#166534;margin-top:14px;}
-  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-  .step{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fafbff;}
-  .step .ph{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--brand);border-radius:20px;padding:2px 10px;margin-bottom:8px;}
-  .step h4{margin:0 0 6px;font-size:14px;}
-  .step ul{margin:0;padding-left:16px;font-size:12.5px;color:#374151;}
-  .step ul li{margin:3px 0;}
-  .tag{font-size:11px;padding:1px 7px;border-radius:6px;background:#e0e7ff;color:#3730a3;margin-right:4px;}
-  .tag.m{background:#dcfce7;color:#166534;}
-  footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px;}
-  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.calls,.road{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<div class="wrap">
-  <header class="top">
-    <h1>汉峪金谷 · P0 真实看板（腾讯位置服务）</h1>
-    <div class="meta">
-      <span>数据：腾讯位置服务 WebService POI（Key 仅本地进程使用，未落盘）</span>
-      <span>边界：bbox 硬裁切 1.5km 半径</span>
-      <span>时间：2026-08-13</span>
-    </div>
-  </header>
-  <div class="kpis" id="kpis"></div>
-  <section>
-    <h2>① 网格供需热力图（300m）</h2>
-    <p class="desc">颜色深浅 = 该网格 POI 总量。深色区为商业/办公核心，浅色区为配套薄弱带。</p>
-    <div id="heat" class="heat"></div>
-    <div class="legend"><span>低</span><span class="bar"></span><span>高</span><span style="margin-left:10px">（悬停查看类目明细）</span></div>
-  </section>
-  <section>
-    <h2>② 类目分布（自动判类）</h2>
-    <p class="desc">红色条 = 目标类目仍为 0，此时数据覆盖率已高，可初步判为<b>真实空白</b>（待 P1/P2 复核）。</p>
-    <div id="bars"></div>
-  </section>
-  <section>
-    <h2>③ 关键判读：真空白 vs 数据缺口</h2>
-    <div class="calls">
-      <div class="call blank"><h3>🟠 真空白（待复核）</h3><p id="blankTxt"></p></div>
-      <div class="call gap"><h3>🔴 数据缺口（已排除）</h3><p>本次覆盖率显著提升，0 值不再是"没采到"，而是真实供给不足的信号。</p></div>
-    </div>
-    <div class="rule" id="ruleTxt"></div>
-  </section>
-  <section>
-    <h2>④ 后续措施（P0→P4 行动路线）</h2>
-    <p class="desc"><span class="tag">AI</span>=AI 主导 <span class="tag m">你</span>=你主导/拍板。每阶段设 Go/No-Go 门控。</p>
-    <div class="road">
-      <div class="step"><span class="ph">P0·补数据</span><h4>接入商业数据源</h4><ul><li><span class="tag m">你</span>提供腾讯 Key（已完成）</li><li><span class="tag">AI</span>已实跑高密度 POI</li><li>产出：可信热力图+空白清单</li></ul></div>
-      <div class="step"><span class="ph">P0·校准</span><h4>覆盖率校准</h4><ul><li><span class="tag">AI</span>叠加企查查 5200+ 企业</li><li>产出：空白清单 H1–Hn 定稿</li><li>门控：边界校验通过</li></ul></div>
-      <div class="step"><span class="ph">P1·定量</span><h4>问卷 + 看板</h4><ul><li><span class="tag m">你</span>取样 300+</li><li><span class="tag">AI</span>清洗+交叉分析</li><li>产出：需求排序</li></ul></div>
-      <div class="step"><span class="ph">P2·定性</span><h4>深访 + 蹲点</h4><ul><li><span class="tag m">你</span>6 类角色访谈</li><li><span class="tag">AI</span>转写+编码+Persona</li><li>产出：痛点故事板</li></ul></div>
-      <div class="step"><span class="ph">P3·验证</span><h4>快闪 / MVP</h4><ul><li><span class="tag m">你</span>现场执行</li><li><span class="tag">AI</span>单位经济测算</li><li>门控：悲观回本≤90天</li></ul></div>
-      <div class="step"><span class="ph">P4·合成</span><h4>企划 + 监测</h4><ul><li><span class="tag">AI</span>企划+财务+PPT</li><li><span class="tag m">你</span>战略取舍</li><li>产出：BP+月报看板</li></ul></div>
-    </div>
-  </section>
-  <footer>本看板由 P0 pipeline（腾讯 WebService）实跑生成 · Key 仅存于本次进程环境变量，未写入任何文件/仓库 · 复用 numeria-geo-sandbox 边界逻辑</footer>
+:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--txt:#e2e8f0;--mut:#94a3b8;--blue:#2563eb;--green:#16a34a;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,'Segoe UI',Roboto,'PingFang SC','Microsoft YaHei',sans-serif;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+h1{font-size:24px;margin:0 0 4px}.sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+.kpi .num{font-size:26px;font-weight:700;color:#fff}.kpi .cap{font-size:12px;color:var(--mut);margin-top:4px}
+.sec{margin-top:30px}.sec-h{font-size:18px;font-weight:700;border-left:4px solid var(--blue);padding-left:10px;margin-bottom:12px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.heat{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:10px 0}
+.cell{aspect-ratio:1;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:600}
+.cell.empty{background:#0b1220;border:1px dashed #1e293b}
+.row{display:flex;align-items:center;gap:10px;margin:5px 0;font-size:13px}
+.lbl{width:64px;color:var(--mut)}.track{flex:1;background:#0b1220;border-radius:6px;height:16px;overflow:hidden}
+.bar{height:100%;background:linear-gradient(90deg,#3b82f6,#2563eb)}.bar.red{background:linear-gradient(90deg,#f87171,#ef4444)}
+.val{width:170px;text-align:right;font-size:12px}.warn{color:#f87171}.muted{color:#64748b;font-size:11px}
+.hlist{margin-top:14px}.h{background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+.h b{color:#fbbf24}
+.stages{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.stage{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;border-top:4px solid var(--line)}
+.stage.green{border-top-color:var(--green)}.stage.blue{border-top-color:var(--blue)}.stage.gray{border-top-color:#475569}
+.stage-h{display:flex;justify-content:space-between;align-items:center;font-size:15px}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;background:#0b1220;border:1px solid var(--line);color:var(--mut)}
+.goal{color:var(--mut);font-size:12px;margin:6px 0 10px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{background:#0b1220;border-radius:10px;padding:10px;font-size:12px}
+.who{font-weight:700;margin-bottom:4px}.col.ai .who{color:#60a5fa}.col.you .who{color:#fbbf24}
+.txt{color:#cbd5e1}
+.out{margin-top:10px;font-size:12px;padding-top:8px;border-top:1px dashed var(--line)}
+.gate{margin-top:6px;font-size:12px;color:#fca5a5}
+.gt{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.gt th,.gt td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+.gt th{background:#0b1220;color:var(--mut)}
+.note{font-size:12px;color:var(--mut);margin-top:10px}
+</style></head><body><div class="wrap">
+<h1>汉峪金谷 · 新区生活工作人群调研作战看板</h1>
+<div class="sub">P0 真实数据已获取（腾讯 POI）｜ 路线：P0补数据✅ → P0校准 → P1 → P2 → P3 → P4，每阶段 Go/No-Go 门控</div>
+
+<div class="sec"><div class="sec-h">① P0 真实数据内容（模拟→真实）</div>
+<div class="panel">
+
+<div class="kpis">
+  <div class="kpi"><div class="num">888</div><div class="cap">真实 POI 总量（腾讯）</div></div>
+  <div class="kpi"><div class="num">68</div><div class="cap">300m 网格数</div></div>
+  <div class="kpi"><div class="num">可用级</div><div class="cap">覆盖率（OSM 曾&lt;5%）</div></div>
+  <div class="kpi"><div class="num">1</div><div class="cap">明确真空白（托育）</div></div>
 </div>
-<script>
-const CELLS = [{"gx": 0, "gy": 7, "c": {"咖啡": 2, "便利店": 3, "银行": 2, "其他": 3}, "t": 10}, {"gx": 0, "gy": 6, "c": {"便利店": 4, "药店": 1, "健身": 1, "银行": 5, "停车": 1}, "t": 12}, {"gx": 0, "gy": 5, "c": {"咖啡": 6, "便利店": 2, "银行": 2, "停车": 5, "诊所": 1}, "t": 16}, {"gx": 0, "gy": 4, "c": {"银行": 1, "停车": 1}, "t": 2}, {"gx": 0, "gy": 3, "c": {"便利店": 3, "停车": 2}, "t": 5}, {"gx": 0, "gy": 2, "c": {"咖啡": 1, "便利店": 4, "药店": 1, "诊所": 1}, "t": 7}, {"gx": 1, "gy": 8, "c": {"咖啡": 5, "便利店": 4, "健身": 3, "停车": 3, "其他": 12}, "t": 27}, {"gx": 1, "gy": 7, "c": {"餐饮": 1, "咖啡": 3, "便利店": 6, "药店": 2, "健身": 2, "停车": 7, "诊所": 3, "其他": 4}, "t": 28}, {"gx": 1, "gy": 6, "c": {"餐饮": 1, "咖啡": 4, "便利店": 3, "药店": 1, "银行": 1, "诊所": 3, "夜经济": 2}, "t": 15}, {"gx": 1, "gy": 5, "c": {"银行": 6, "停车": 15}, "t": 21}, {"gx": 1, "gy": 4, "c": {"餐饮": 7, "咖啡": 1, "健身": 1, "银行": 1, "停车": 1, "诊所": 1}, "t": 12}, {"gx": 1, "gy": 3, "c": {"停车": 1}, "t": 1}, {"gx": 1, "gy": 2, "c": {"停车": 1}, "t": 1}, {"gx": 2, "gy": 8, "c": {"咖啡": 2, "银行": 1, "停车": 1, "其他": 2}, "t": 6}, {"gx": 2, "gy": 7, "c": {"餐饮": 3, "咖啡": 4, "便利店": 4, "药店": 1, "健身": 2, "银行": 2, "停车": 9, "其他": 16}, "t": 41}, {"gx": 2, "gy": 6, "c": {"餐饮": 10, "咖啡": 2, "便利店": 5, "健身": 3, "银行": 3, "停车": 2}, "t": 25}, {"gx": 2, "gy": 5, "c": {"餐饮": 6, "咖啡": 3, "便利店": 2, "药店": 1, "银行": 1, "停车": 6, "其他": 3}, "t": 22}, {"gx": 2, "gy": 4, "c": {"餐饮": 1, "咖啡": 1, "停车": 2}, "t": 4}, {"gx": 3, "gy": 8, "c": {"药店": 1, "停车": 2}, "t": 3}, {"gx": 3, "gy": 7, "c": {"餐饮": 15, "便利店": 4, "停车": 2, "诊所": 1, "其他": 9}, "t": 31}, {"gx": 3, "gy": 6, "c": {"餐饮": 10, "便利店": 2, "健身": 1, "银行": 4, "停车": 9, "其他": 3}, "t": 29}, {"gx": 3, "gy": 5, "c": {"餐饮": 4, "咖啡": 1, "便利店": 3, "健身": 1, "停车": 4, "其他": 2}, "t": 15}, {"gx": 3, "gy": 4, "c": {"咖啡": 2, "停车": 2}, "t": 4}, {"gx": 3, "gy": 3, "c": {"餐饮": 6, "停车": 3}, "t": 9}, {"gx": 3, "gy": 2, "c": {"餐饮": 2, "咖啡": 1, "便利店": 3, "银行": 6, "停车": 2}, "t": 14}, {"gx": 3, "gy": 1, "c": {"餐饮": 5, "咖啡": 2, "便利店": 1, "健身": 2, "银行": 5, "停车": 1, "其他": 2}, "t": 18}, {"gx": 3, "gy": 0, "c": {"停车": 1}, "t": 1}, {"gx": 4, "gy": 9, "c": {"停车": 2, "其他": 3}, "t": 5}, {"gx": 4, "gy": 8, "c": {"便利店": 2, "药店": 1, "停车": 2, "诊所": 1, "其他": 1}, "t": 7}, {"gx": 4, "gy": 7, "c": {"餐饮": 11, "咖啡": 1, "便利店": 5, "药店": 2, "停车": 1, "其他": 9}, "t": 29}, {"gx": 4, "gy": 6, "c": {"餐饮": 33, "咖啡": 1, "便利店": 6, "药店": 6, "健身": 1, "银行": 3, "停车": 10, "诊所": 1, "其他": 8}, "t": 69}, {"gx": 4, "gy": 5, "c": {"餐饮": 5, "咖啡": 5, "便利店": 6, "药店": 1, "健身": 2, "银行": 4, "停车": 10, "诊所": 1, "其他": 4}, "t": 38}, {"gx": 4, "gy": 4, "c": {"餐饮": 1, "咖啡": 1, "停车": 1}, "t": 3}, {"gx": 4, "gy": 3, "c": {"餐饮": 16, "咖啡": 1, "便利店": 1}, "t": 18}, {"gx": 4, "gy": 2, "c": {"停车": 1}, "t": 1}, {"gx": 5, "gy": 9, "c": {"便利店": 1, "健身": 1}, "t": 2}, {"gx": 5, "gy": 7, "c": {"停车": 2}, "t": 2}, {"gx": 5, "gy": 6, "c": {"药店": 2, "停车": 3, "诊所": 2}, "t": 7}, {"gx": 5, "gy": 5, "c": {"咖啡": 1, "便利店": 1, "停车": 1, "诊所": 1}, "t": 4}, {"gx": 5, "gy": 4, "c": {"餐饮": 2, "咖啡": 1, "停车": 3}, "t": 6}, {"gx": 5, "gy": 3, "c": {"餐饮": 19, "咖啡": 1, "健身": 1, "停车": 3}, "t": 24}, {"gx": 5, "gy": 2, "c": {"银行": 1, "停车": 1, "诊所": 1}, "t": 3}, {"gx": 6, "gy": 9, "c": {"药店": 2}, "t": 2}, {"gx": 6, "gy": 8, "c": {"便利店": 1, "停车": 2}, "t": 3}, {"gx": 6, "gy": 6, "c": {"银行": 2}, "t": 2}, {"gx": 6, "gy": 5, "c": {"健身": 2, "停车": 3, "其他": 2}, "t": 7}, {"gx": 6, "gy": 4, "c": {"餐饮": 1, "便利店": 1, "停车": 2}, "t": 4}, {"gx": 6, "gy": 3, "c": {"餐饮": 8, "药店": 1, "健身": 2, "停车": 7}, "t": 18}, {"gx": 6, "gy": 2, "c": {"餐饮": 3, "咖啡": 1, "停车": 5, "诊所": 1, "其他": 6}, "t": 16}, {"gx": 6, "gy": 1, "c": {"餐饮": 2, "咖啡": 1, "便利店": 3, "银行": 1, "停车": 2, "诊所": 1}, "t": 10}, {"gx": 7, "gy": 9, "c": {"银行": 1}, "t": 1}, {"gx": 7, "gy": 8, "c": {"便利店": 5, "停车": 1, "其他": 1}, "t": 7}, {"gx": 7, "gy": 7, "c": {"停车": 1}, "t": 1}, {"gx": 7, "gy": 6, "c": {"餐饮": 2, "便利店": 2}, "t": 4}, {"gx": 7, "gy": 5, "c": {"餐饮": 4, "咖啡": 1, "便利店": 2, "停车": 2, "诊所": 1}, "t": 10}, {"gx": 7, "gy": 4, "c": {"餐饮": 5, "便利店": 1, "停车": 2}, "t": 8}, {"gx": 7, "gy": 3, "c": {"便利店": 3, "停车": 2, "诊所": 1, "其他": 6}, "t": 12}, {"gx": 7, "gy": 2, "c": {"餐饮": 1, "银行": 2, "停车": 1}, "t": 4}, {"gx": 8, "gy": 9, "c": {"其他": 1}, "t": 1}, {"gx": 8, "gy": 5, "c": {"餐饮": 6, "咖啡": 3, "便利店": 6, "药店": 1, "健身": 1, "银行": 2, "停车": 5}, "t": 24}, {"gx": 8, "gy": 4, "c": {"餐饮": 3, "咖啡": 2, "便利店": 5, "健身": 2, "停车": 12, "其他": 2}, "t": 26}, {"gx": 8, "gy": 3, "c": {"餐饮": 4, "咖啡": 2, "便利店": 10, "健身": 2, "银行": 1, "停车": 11, "诊所": 3, "其他": 13}, "t": 46}, {"gx": 8, "gy": 2, "c": {"餐饮": 4, "咖啡": 2, "便利店": 2, "药店": 4, "银行": 1, "停车": 8, "诊所": 1, "其他": 4}, "t": 26}, {"gx": 8, "gy": 1, "c": {"药店": 1}, "t": 1}, {"gx": 9, "gy": 5, "c": {"餐饮": 7, "便利店": 4, "药店": 2, "银行": 1, "停车": 4, "诊所": 2, "其他": 3}, "t": 23}, {"gx": 9, "gy": 4, "c": {"餐饮": 1, "咖啡": 2, "便利店": 4, "银行": 1, "停车": 2, "诊所": 1, "其他": 2}, "t": 13}, {"gx": 9, "gy": 3, "c": {"便利店": 1, "药店": 1, "健身": 1, "停车": 5, "诊所": 1, "其他": 4}, "t": 13}, {"gx": 9, "gy": 2, "c": {"餐饮": 5, "便利店": 1, "诊所": 1, "其他": 2}, "t": 9}];
-const STATS = {"total": 888, "cells": 68, "target_zero": ["托育"], "cat_total": {"餐饮": 214, "咖啡": 66, "便利店": 126, "药店": 32, "健身": 31, "托育": 0, "银行": 60, "停车": 200, "诊所": 30, "夜经济": 2, "生活服务": 0, "其他办公": 0, "其他": 127}};
-const TARGET = ["咖啡","药店","健身","托育","夜经济"];
-const CAT_ORDER = ["餐饮","咖啡","便利店","药店","健身","托育","银行","停车","诊所","夜经济","生活服务","其他办公","其他"];
-const catSum = {}; CAT_ORDER.forEach(k=>catSum[k]=0);
-let unrec=0;
-CELLS.forEach(c=>{ for(const k in c.c){ if(catSum[k]!==undefined) catSum[k]+=c.c[k]; else catSum[k]=(catSum[k]||0)+c.c[k]; } });
 
-// KPI
-const kpis=document.getElementById('kpis');
-const tz = STATS.target_zero;
-kpis.innerHTML = `
-  <div class="kpi ok"><div class="v">${STATS.total}</div><div class="l">采集 POI 节点（腾讯）</div></div>
-  <div class="kpi"><div class="v">${STATS.cells}</div><div class="l">300m 网格数</div></div>
-  <div class="kpi ${tz.length? 'warn':'ok'}"><div class="v">${tz.length}/${TARGET.length}</div><div class="l">目标类目为 0（疑似空白）</div></div>
-  <div class="kpi ok"><div class="v">高</div><div class="l">覆盖率（vs OSM &lt;5%）</div></div>`;
+<div class="note">模拟阶段（OSM）仅 103 POI、覆盖率&lt;5%，5 类目全 0 实为<strong>数据缺口</strong>；换腾讯后 888 POI、覆盖率可用，证实那些 0 是没采到而非没需求。已是<strong>真实数据</strong>。</div>
+<div style="margin-top:16px"><b>300m 网格供需热力图</b>（颜色越深=POI 越密，核心中轴 gx3-4 / gy6-7 为汉峪主楼宇）</div>
+<div class="heat"><div class="cell empty" style="grid-column:1;grid-row:1"></div><div class="cell empty" style="grid-column:1;grid-row:2"></div><div class="cell" style="grid-column:1;grid-row:3;background:rgba(37,99,235,0.21)" title="网格(0,2) 总量7｜咖啡1 便利店4 药店1 诊所1">7</div><div class="cell" style="grid-column:1;grid-row:4;background:rgba(37,99,235,0.18)" title="网格(0,3) 总量5｜便利店3 停车2">5</div><div class="cell" style="grid-column:1;grid-row:5;background:rgba(37,99,235,0.15)" title="网格(0,4) 总量2｜银行1 停车1">2</div><div class="cell" style="grid-column:1;grid-row:6;background:rgba(37,99,235,0.32)" title="网格(0,5) 总量16｜咖啡6 便利店2 银行2 停车5 诊所1">16</div><div class="cell" style="grid-column:1;grid-row:7;background:rgba(37,99,235,0.27)" title="网格(0,6) 总量12｜便利店4 药店1 健身1 银行5 停车1">12</div><div class="cell" style="grid-column:1;grid-row:8;background:rgba(37,99,235,0.25)" title="网格(0,7) 总量10｜咖啡2 便利店3 银行2 其他3">10</div><div class="cell empty" style="grid-column:1;grid-row:9"></div><div class="cell empty" style="grid-column:1;grid-row:10"></div><div class="cell empty" style="grid-column:2;grid-row:1"></div><div class="cell empty" style="grid-column:2;grid-row:2"></div><div class="cell" style="grid-column:2;grid-row:3;background:rgba(37,99,235,0.13)" title="网格(1,2) 总量1｜停车1">1</div><div class="cell" style="grid-column:2;grid-row:4;background:rgba(37,99,235,0.13)" title="网格(1,3) 总量1｜停车1">1</div><div class="cell" style="grid-column:2;grid-row:5;background:rgba(37,99,235,0.27)" title="网格(1,4) 总量12｜餐饮7 咖啡1 健身1 银行1 停车1 诊所1">12</div><div class="cell" style="grid-column:2;grid-row:6;background:rgba(37,99,235,0.39)" title="网格(1,5) 总量21｜银行6 停车15">21</div><div class="cell" style="grid-column:2;grid-row:7;background:rgba(37,99,235,0.31)" title="网格(1,6) 总量15｜餐饮1 咖啡4 便利店3 药店1 银行1 诊所3 夜经济2">15</div><div class="cell" style="grid-column:2;grid-row:8;background:rgba(37,99,235,0.48)" title="网格(1,7) 总量28｜餐饮1 咖啡3 便利店6 药店2 健身2 停车7 诊所3 其他4">28</div><div class="cell" style="grid-column:2;grid-row:9;background:rgba(37,99,235,0.46)" title="网格(1,8) 总量27｜咖啡5 便利店4 健身3 停车3 其他12">27</div><div class="cell empty" style="grid-column:2;grid-row:10"></div><div class="cell empty" style="grid-column:3;grid-row:1"></div><div class="cell empty" style="grid-column:3;grid-row:2"></div><div class="cell empty" style="grid-column:3;grid-row:3"></div><div class="cell empty" style="grid-column:3;grid-row:4"></div><div class="cell" style="grid-column:3;grid-row:5;background:rgba(37,99,235,0.17)" title="网格(2,4) 总量4｜餐饮1 咖啡1 停车2">4</div><div class="cell" style="grid-column:3;grid-row:6;background:rgba(37,99,235,0.40)" title="网格(2,5) 总量22｜餐饮6 咖啡3 便利店2 药店1 银行1 停车6 其他3">22</div><div class="cell" style="grid-column:3;grid-row:7;background:rgba(37,99,235,0.44)" title="网格(2,6) 总量25｜餐饮10 咖啡2 便利店5 健身3 银行3 停车2">25</div><div class="cell" style="grid-column:3;grid-row:8;background:rgba(37,99,235,0.64)" title="网格(2,7) 总量41｜餐饮3 咖啡4 便利店4 药店1 健身2 银行2 停车9 其他16">41</div><div class="cell" style="grid-column:3;grid-row:9;background:rgba(37,99,235,0.20)" title="网格(2,8) 总量6｜咖啡2 银行1 停车1 其他2">6</div><div class="cell empty" style="grid-column:3;grid-row:10"></div><div class="cell" style="grid-column:4;grid-row:1;background:rgba(37,99,235,0.13)" title="网格(3,0) 总量1｜停车1">1</div><div class="cell" style="grid-column:4;grid-row:2;background:rgba(37,99,235,0.35)" title="网格(3,1) 总量18｜餐饮5 咖啡2 便利店1 健身2 银行5 停车1 其他2">18</div><div class="cell" style="grid-column:4;grid-row:3;background:rgba(37,99,235,0.30)" title="网格(3,2) 总量14｜餐饮2 咖啡1 便利店3 银行6 停车2">14</div><div class="cell" style="grid-column:4;grid-row:4;background:rgba(37,99,235,0.23)" title="网格(3,3) 总量9｜餐饮6 停车3">9</div><div class="cell" style="grid-column:4;grid-row:5;background:rgba(37,99,235,0.17)" title="网格(3,4) 总量4｜咖啡2 停车2">4</div><div class="cell" style="grid-column:4;grid-row:6;background:rgba(37,99,235,0.31)" title="网格(3,5) 总量15｜餐饮4 咖啡1 便利店3 健身1 停车4 其他2">15</div><div class="cell" style="grid-column:4;grid-row:7;background:rgba(37,99,235,0.49)" title="网格(3,6) 总量29｜餐饮10 便利店2 健身1 银行4 停车9 其他3">29</div><div class="cell" style="grid-column:4;grid-row:8;background:rgba(37,99,235,0.52)" title="网格(3,7) 总量31｜餐饮15 便利店4 停车2 诊所1 其他9">31</div><div class="cell" style="grid-column:4;grid-row:9;background:rgba(37,99,235,0.16)" title="网格(3,8) 总量3｜药店1 停车2">3</div><div class="cell empty" style="grid-column:4;grid-row:10"></div><div class="cell empty" style="grid-column:5;grid-row:1"></div><div class="cell empty" style="grid-column:5;grid-row:2"></div><div class="cell" style="grid-column:5;grid-row:3;background:rgba(37,99,235,0.13)" title="网格(4,2) 总量1｜停车1">1</div><div class="cell" style="grid-column:5;grid-row:4;background:rgba(37,99,235,0.35)" title="网格(4,3) 总量18｜餐饮16 咖啡1 便利店1">18</div><div class="cell" style="grid-column:5;grid-row:5;background:rgba(37,99,235,0.16)" title="网格(4,4) 总量3｜餐饮1 咖啡1 停车1">3</div><div class="cell" style="grid-column:5;grid-row:6;background:rgba(37,99,235,0.60)" title="网格(4,5) 总量38｜餐饮5 咖啡5 便利店6 药店1 健身2 银行4 停车10 诊所1 其他4">38</div><div class="cell" style="grid-column:5;grid-row:7;background:rgba(37,99,235,1.00)" title="网格(4,6) 总量69｜餐饮33 咖啡1 便利店6 药店6 健身1 银行3 停车10 诊所1 其他8">69</div><div class="cell" style="grid-column:5;grid-row:8;background:rgba(37,99,235,0.49)" title="网格(4,7) 总量29｜餐饮11 咖啡1 便利店5 药店2 停车1 其他9">29</div><div class="cell" style="grid-column:5;grid-row:9;background:rgba(37,99,235,0.21)" title="网格(4,8) 总量7｜便利店2 药店1 停车2 诊所1 其他1">7</div><div class="cell" style="grid-column:5;grid-row:10;background:rgba(37,99,235,0.18)" title="网格(4,9) 总量5｜停车2 其他3">5</div><div class="cell empty" style="grid-column:6;grid-row:1"></div><div class="cell empty" style="grid-column:6;grid-row:2"></div><div class="cell" style="grid-column:6;grid-row:3;background:rgba(37,99,235,0.16)" title="网格(5,2) 总量3｜银行1 停车1 诊所1">3</div><div class="cell" style="grid-column:6;grid-row:4;background:rgba(37,99,235,0.43)" title="网格(5,3) 总量24｜餐饮19 咖啡1 健身1 停车3">24</div><div class="cell" style="grid-column:6;grid-row:5;background:rgba(37,99,235,0.20)" title="网格(5,4) 总量6｜餐饮2 咖啡1 停车3">6</div><div class="cell" style="grid-column:6;grid-row:6;background:rgba(37,99,235,0.17)" title="网格(5,5) 总量4｜咖啡1 便利店1 停车1 诊所1">4</div><div class="cell" style="grid-column:6;grid-row:7;background:rgba(37,99,235,0.21)" title="网格(5,6) 总量7｜药店2 停车3 诊所2">7</div><div class="cell" style="grid-column:6;grid-row:8;background:rgba(37,99,235,0.15)" title="网格(5,7) 总量2｜停车2">2</div><div class="cell empty" style="grid-column:6;grid-row:9"></div><div class="cell" style="grid-column:6;grid-row:10;background:rgba(37,99,235,0.15)" title="网格(5,9) 总量2｜便利店1 健身1">2</div><div class="cell empty" style="grid-column:7;grid-row:1"></div><div class="cell" style="grid-column:7;grid-row:2;background:rgba(37,99,235,0.25)" title="网格(6,1) 总量10｜餐饮2 咖啡1 便利店3 银行1 停车2 诊所1">10</div><div class="cell" style="grid-column:7;grid-row:3;background:rgba(37,99,235,0.32)" title="网格(6,2) 总量16｜餐饮3 咖啡1 停车5 诊所1 其他6">16</div><div class="cell" style="grid-column:7;grid-row:4;background:rgba(37,99,235,0.35)" title="网格(6,3) 总量18｜餐饮8 药店1 健身2 停车7">18</div><div class="cell" style="grid-column:7;grid-row:5;background:rgba(37,99,235,0.17)" title="网格(6,4) 总量4｜餐饮1 便利店1 停车2">4</div><div class="cell" style="grid-column:7;grid-row:6;background:rgba(37,99,235,0.21)" title="网格(6,5) 总量7｜健身2 停车3 其他2">7</div><div class="cell" style="grid-column:7;grid-row:7;background:rgba(37,99,235,0.15)" title="网格(6,6) 总量2｜银行2">2</div><div class="cell empty" style="grid-column:7;grid-row:8"></div><div class="cell" style="grid-column:7;grid-row:9;background:rgba(37,99,235,0.16)" title="网格(6,8) 总量3｜便利店1 停车2">3</div><div class="cell" style="grid-column:7;grid-row:10;background:rgba(37,99,235,0.15)" title="网格(6,9) 总量2｜药店2">2</div><div class="cell empty" style="grid-column:8;grid-row:1"></div><div class="cell empty" style="grid-column:8;grid-row:2"></div><div class="cell" style="grid-column:8;grid-row:3;background:rgba(37,99,235,0.17)" title="网格(7,2) 总量4｜餐饮1 银行2 停车1">4</div><div class="cell" style="grid-column:8;grid-row:4;background:rgba(37,99,235,0.27)" title="网格(7,3) 总量12｜便利店3 停车2 诊所1 其他6">12</div><div class="cell" style="grid-column:8;grid-row:5;background:rgba(37,99,235,0.22)" title="网格(7,4) 总量8｜餐饮5 便利店1 停车2">8</div><div class="cell" style="grid-column:8;grid-row:6;background:rgba(37,99,235,0.25)" title="网格(7,5) 总量10｜餐饮4 咖啡1 便利店2 停车2 诊所1">10</div><div class="cell" style="grid-column:8;grid-row:7;background:rgba(37,99,235,0.17)" title="网格(7,6) 总量4｜餐饮2 便利店2">4</div><div class="cell" style="grid-column:8;grid-row:8;background:rgba(37,99,235,0.13)" title="网格(7,7) 总量1｜停车1">1</div><div class="cell" style="grid-column:8;grid-row:9;background:rgba(37,99,235,0.21)" title="网格(7,8) 总量7｜便利店5 停车1 其他1">7</div><div class="cell" style="grid-column:8;grid-row:10;background:rgba(37,99,235,0.13)" title="网格(7,9) 总量1｜银行1">1</div><div class="cell empty" style="grid-column:9;grid-row:1"></div><div class="cell" style="grid-column:9;grid-row:2;background:rgba(37,99,235,0.13)" title="网格(8,1) 总量1｜药店1">1</div><div class="cell" style="grid-column:9;grid-row:3;background:rgba(37,99,235,0.45)" title="网格(8,2) 总量26｜餐饮4 咖啡2 便利店2 药店4 银行1 停车8 诊所1 其他4">26</div><div class="cell" style="grid-column:9;grid-row:4;background:rgba(37,99,235,0.71)" title="网格(8,3) 总量46｜餐饮4 咖啡2 便利店10 健身2 银行1 停车11 诊所3 其他13">46</div><div class="cell" style="grid-column:9;grid-row:5;background:rgba(37,99,235,0.45)" title="网格(8,4) 总量26｜餐饮3 咖啡2 便利店5 健身2 停车12 其他2">26</div><div class="cell" style="grid-column:9;grid-row:6;background:rgba(37,99,235,0.43)" title="网格(8,5) 总量24｜餐饮6 咖啡3 便利店6 药店1 健身1 银行2 停车5">24</div><div class="cell empty" style="grid-column:9;grid-row:7"></div><div class="cell empty" style="grid-column:9;grid-row:8"></div><div class="cell empty" style="grid-column:9;grid-row:9"></div><div class="cell" style="grid-column:9;grid-row:10;background:rgba(37,99,235,0.13)" title="网格(8,9) 总量1｜其他1">1</div><div class="cell empty" style="grid-column:10;grid-row:1"></div><div class="cell empty" style="grid-column:10;grid-row:2"></div><div class="cell" style="grid-column:10;grid-row:3;background:rgba(37,99,235,0.23)" title="网格(9,2) 总量9｜餐饮5 便利店1 诊所1 其他2">9</div><div class="cell" style="grid-column:10;grid-row:4;background:rgba(37,99,235,0.29)" title="网格(9,3) 总量13｜便利店1 药店1 健身1 停车5 诊所1 其他4">13</div><div class="cell" style="grid-column:10;grid-row:5;background:rgba(37,99,235,0.29)" title="网格(9,4) 总量13｜餐饮1 咖啡2 便利店4 银行1 停车2 诊所1 其他2">13</div><div class="cell" style="grid-column:10;grid-row:6;background:rgba(37,99,235,0.41)" title="网格(9,5) 总量23｜餐饮7 便利店4 药店2 银行1 停车4 诊所2 其他3">23</div><div class="cell empty" style="grid-column:10;grid-row:7"></div><div class="cell empty" style="grid-column:10;grid-row:8"></div><div class="cell empty" style="grid-column:10;grid-row:9"></div><div class="cell empty" style="grid-column:10;grid-row:10"></div></div>
+<div style="margin-top:16px"><b>类目分布（真实总量）</b></div>
+<div class="row"><span class="lbl">餐饮</span><div class="track"><div class="bar" style="width:100.0%"></div></div><span class="val">214</span></div><div class="row"><span class="lbl">咖啡</span><div class="track"><div class="bar" style="width:30.8%"></div></div><span class="val">66</span></div><div class="row"><span class="lbl">便利店</span><div class="track"><div class="bar" style="width:58.9%"></div></div><span class="val">126</span></div><div class="row"><span class="lbl">药店</span><div class="track"><div class="bar" style="width:15.0%"></div></div><span class="val">32</span></div><div class="row"><span class="lbl">健身</span><div class="track"><div class="bar" style="width:14.5%"></div></div><span class="val">31</span></div><div class="row"><span class="lbl">托育</span><div class="track"><div class="bar red" style="width:0.0%"></div></div><span class="val">0 <b class="warn">←真空白候选</b></span></div><div class="row"><span class="lbl">银行</span><div class="track"><div class="bar" style="width:28.0%"></div></div><span class="val">60</span></div><div class="row"><span class="lbl">停车</span><div class="track"><div class="bar" style="width:93.5%"></div></div><span class="val">200</span></div><div class="row"><span class="lbl">诊所</span><div class="track"><div class="bar" style="width:14.0%"></div></div><span class="val">30</span></div><div class="row"><span class="lbl">夜经济</span><div class="track"><div class="bar" style="width:0.9%"></div></div><span class="val">2</span></div><div class="row"><span class="lbl">生活服务</span><div class="track"><div class="bar" style="width:0.0%"></div></div><span class="val">0 <span class="muted">(疑似归并)</span></span></div><div class="row"><span class="lbl">其他办公</span><div class="track"><div class="bar" style="width:0.0%"></div></div><span class="val">0 <span class="muted">(疑似归并)</span></span></div><div class="row"><span class="lbl">其他</span><div class="track"><div class="bar" style="width:59.3%"></div></div><span class="val">127</span></div>
+<div class="hlist">
+<div class="h"><b>H1 托育 = 0</b>：全 68 网格零记录，高覆盖下可判<strong>真实空白</strong>（产城新区双职工家庭刚需，P1/P2 重点复核）。</div>
+<div class="h"><b>H2 夜经济 = 2</b>：极稀疏，仅 1 网格，晚间社交/夜宵供给严重不足。</div>
+<div class="h"><b>H3 午间性价比餐</b>：餐饮 214 总量高，但需 P1 验证价格带与排队时长缺口。</div>
+<div class="h" style="color:#64748b">注：生活服务=0 / 其他办公=0 属分类归并（已并入"其他"127），不计入真空白。</div>
+</div>
+</div></div>
 
-// 热力图
-const gxs=CELLS.map(c=>c.gx), gys=CELLS.map(c=>c.gy);
-const minX=Math.min(...gxs),maxX=Math.max(...gxs),minY=Math.min(...gys),maxY=Math.max(...gys);
-const maxT=Math.max(...CELLS.map(c=>c.t));
-const grid={}; CELLS.forEach(c=>grid[c.gx+","+c.gy]=c);
-function color(t){const r=maxT?t/maxT:0;const l=92-r*58;return `hsl(168,70%,${l}%)`;}
-const heat=document.getElementById('heat');
-heat.style.gridTemplateColumns=`repeat(${maxX-minX+1},62px)`;
-for(let y=maxY;y>=minY;y--){for(let x=minX;x<=maxX;x++){
-  const d=grid[x+","+y];const div=document.createElement('div');div.className='cell';
-  if(d){div.style.background=color(d.t);div.style.color=d.t/maxT>0.55?'#fff':'#064e3b';
-    const b=Object.entries(d.c).map(([k,v])=>`${k}:${v}`).join('  ');
-    div.title=`网格(${x},${y}) 总量:${d.t}\n${b}`;div.innerHTML=`${d.t}<small>(${x},${y})</small>`;}
-  else{div.style.background='#f8fafc';div.style.color='#cbd5e1';div.title=`网格(${x},${y}) 无数据`;div.innerHTML=`0<small>(${x},${y})</small>`;}
-  heat.appendChild(div);}}
+<div class="sec"><div class="sec-h">② P0→P4 行动路线（AI/你 分工 + 门控）</div>
+<div class="stages">
+    <div class="stage green">
+      <div class="stage-h"><b>P0·补数据</b><span class="badge">✅ 已完成</span></div>
+      <div class="goal">接入商业数据源，产出可信热力图+空白清单</div>
+      <div class="split"><div class="col ai"><div class="who">AI 主导</div><div class="txt">实跑腾讯 POI 888 条 / 68 网格，自动聚合+判类+空白识别</div></div>
+      <div class="col you"><div class="who">你 主导</div><div class="txt">提供腾讯 Key（已给 6 个，本次用 Key1）</div></div></div>
+      <div class="out"><b>产出：</b>产出：可信供需热力图 + 空白清单 v1（H1 托育空白）</div>
+      <div class="gate"><b>门控：</b>门控：边界硬裁切通过（bbox 内，无区级误用城市级）</div>
+    </div>
+    <div class="stage blue">
+      <div class="stage-h"><b>P0·校准</b><span class="badge">⏳ 下一步</span></div>
+      <div class="goal">叠加企业数据反推白天人口，空白清单 H1–Hn 定稿</div>
+      <div class="split"><div class="col ai"><div class="who">AI 主导</div><div class="txt">拉企查查 5200+ 企业（行业/注册地/规模）→ 反推分时段办公人口；叠加人口×配套缺口矩阵；坐标漂移&bbox 边界校验</div></div>
+      <div class="col you"><div class="who">你 主导</div><div class="txt">提供企查查 Key 或授权走现有企业库；确认产城边界口径</div></div></div>
+      <div class="out"><b>产出：</b>产出：人口×配套缺口矩阵 + 空白清单 H1–Hn 定稿</div>
+      <div class="gate"><b>门控：</b>门控：边界校验通过（坐标漂移&lt;50m，无跨区污染）</div>
+    </div>
+    <div class="stage gray">
+      <div class="stage-h"><b>P1·定量</b><span class="badge">🔲 待启动</span></div>
+      <div class="goal">问卷+看板，需求规模排序</div>
+      <div class="split"><div class="col ai"><div class="who">AI 主导</div><div class="txt">基于 H1–Hn 生成问卷（含育儿/午餐饮/夜经济题）；投放看板；清洗+交叉分析（人群×场景矩阵）</div></div>
+      <div class="col you"><div class="who">你 主导</div><div class="txt">取样 ≥300 份（物业名册/企业 HR/企微业主群/午间食堂拦截）</div></div></div>
+      <div class="out"><b>产出：</b>产出：需求排序 TOP + 分群渗透率</div>
+      <div class="gate"><b>门控：</b>门控：有效样本≥300 且 核心/居住/服务 三圈均衡</div>
+    </div>
+    <div class="stage gray">
+      <div class="stage-h"><b>P2·定性</b><span class="badge">🔲 待启动</span></div>
+      <div class="goal">深访+蹲点，挖动机与痛点</div>
+      <div class="split"><div class="col ai"><div class="who">AI 主导</div><div class="txt">转写+编码（JTBD/KANO）；输出 Persona 卡片与痛点故事板</div></div>
+      <div class="col you"><div class="who">你 主导</div><div class="txt">6 类角色深访（通勤白领 / 有娃家长 / 企业 HR / 商户主理 / 夜班族 / 物业招商）各 3–5 人；午晚高峰蹲点</div></div></div>
+      <div class="out"><b>产出：</b>产出：痛点故事板 + Persona</div>
+      <div class="gate"><b>门控：</b>门控：每角色≥3 有效访谈，动机编码收敛一致</div>
+    </div>
+    <div class="stage gray">
+      <div class="stage-h"><b>P3·验证</b><span class="badge">🔲 待启动</span></div>
+      <div class="goal">快闪/MVP 现场验证付费意愿</div>
+      <div class="split"><div class="col ai"><div class="who">AI 主导</div><div class="txt">单位经济模型（客单/毛利/回本）；悲观情景测算</div></div>
+      <div class="col you"><div class="who">你 主导</div><div class="txt">现场执行快闪（建议：午间餐+休息舱引流）或无人货柜；记录转化与复购</div></div></div>
+      <div class="out"><b>产出：</b>产出：MVP 实测单位经济 + 付费证据</div>
+      <div class="gate"><b>门控：</b>门控：悲观情景回本≤90 天</div>
+    </div>
+    <div class="stage gray">
+      <div class="stage-h"><b>P4·合成</b><span class="badge">🔲 待启动</span></div>
+      <div class="goal">企划+常态化监测</div>
+      <div class="split"><div class="col ai"><div class="who">AI 主导</div><div class="txt">企划/BP/财务模型/PPT 草案；月报监测看板（增量 diff）</div></div>
+      <div class="col you"><div class="who">你 主导</div><div class="txt">战略取舍（先卡哪块空白业态）；资源拍板；立项/融资决策</div></div></div>
+      <div class="out"><b>产出：</b>产出：BP + 月报看板 + 招商话术</div>
+      <div class="gate"><b>门控：</b>门控：BP 经你签字，监测看板上线</div>
+    </div></div></div>
 
-// 类目条形
-const bars=document.getElementById('bars');
-const maxC=Math.max(...CAT_ORDER.map(k=>catSum[k]||0));
-CAT_ORDER.forEach(k=>{const v=catSum[k]||0;const isT=TARGET.includes(k);
-  const row=document.createElement('div');row.className='bar-row';
-  row.innerHTML=`<div class="name">${k}${isT?' ⚠':''}</div><div class="bar-track"><div class="bar-fill ${isT&&v===0?'zero':''}" style="width:${Math.max(v/maxC*100,2)}%"></div></div><div class="val ${isT&&v===0?'gap':''}">${v===0?(isT?'空白':'0'):v}</div>`;
-  bars.appendChild(row);});
+<div class="sec"><div class="sec-h">③ Go/No-Go 门控总表</div>
+<div class="panel">
+<table class="gt">
+<tr><th>阶段出口</th><th>Go 标准</th><th>No-Go 动作</th></tr>
+<tr><td>P0→校准</td><td>边界校验通过，坐标漂移&lt;50m</td><td>回炉重裁切 bbox</td></tr>
+<tr><td>校准→P1</td><td>空白清单 H1–Hn 定稿，≥1 明确真空白</td><td>补企业数据/换口径</td></tr>
+<tr><td>P1→P2</td><td>有效样本≥300 且三圈均衡</td><td>补取样渠道</td></tr>
+<tr><td>P2→P3</td><td>每角色≥3 访谈，动机编码收敛</td><td>补深访</td></tr>
+<tr><td>P3→P4</td><td>悲观回本≤90 天</td><td>砍业态/换 MVP</td></tr>
+</table>
+<div class="note">每阶段出口须达 Go 标准方可进入下一阶段；未达则回炉（动作见右列）。所有外部数据/Key 不进公开仓库，边界硬编码校验。</div>
+</div></div>
 
-// 判读
-document.getElementById('blankTxt').textContent = tz.length
-  ? `以下目标类目本次仍为 0，结合高覆盖率，初步判为真实空白，建议优先进入 P1 复核：${tz.join('、')}。`
-  : '所有目标类目均有供给，空白点需从"密度/价格带/时段"维度进一步挖掘。';
-document.getElementById('ruleTxt').textContent = '✅ 判读规则：覆盖率低时 0 值→数据缺口；覆盖率高风险 0 值→真实空白。本次已用腾讯商业数据源将覆盖率从 OSM 的 <5% 提升至可用水平，0 值结论可信度显著提高（机制篇 坑#1、坑#4）。';
-</script>
-</body>
-</html>
+<div class="sec"><div class="sec-h">④ 建议下一步</div>
+<div class="panel">
+从 <b>P0·校准</b> 起步：你提供企查查 Key（或授权现有企业库），AI 拉 5200+ 企业反推白天人口，产出「人口×配套缺口矩阵」，把 H1 托育空白升级为定稿清单。
+亦可并行开 <b>P1·定量</b>：AI 基于 H1–H3 生成问卷与投放看板，你启动取样（物业/HR/企微群）。
+</div></div>
+
+</div></body></html>
