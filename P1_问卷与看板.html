@@ -1,0 +1,135 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>汉峪金谷 P1·定量 · 问卷与分析看板</title>
+<style>
+:root{--bg:#0f1420;--card:#1a2233;--line:#2a3450;--txt:#e6ebf5;--mut:#93a0bd;--acc:#4da3ff;--warn:#ffb454;--ok:#3ecf8e;--bad:#ff6b6b}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--txt);font:14px/1.6 -apple-system,'Segoe UI',sans-serif}
+header{padding:24px 28px;background:linear-gradient(135deg,#16203a,#0f1420);border-bottom:1px solid var(--line)}
+h1{margin:0 0 4px;font-size:22px} .sub{color:var(--mut)} .wrap{max-width:1080px;margin:0 auto;padding:24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;margin:16px 0}
+h2{font-size:17px;margin:0 0 12px;color:var(--acc)} h3{font-size:14px;color:var(--mut);margin:18px 0 8px}
+.bar{display:flex;align-items:center;gap:10px;margin:6px 0} .bar .lab{width:130px;color:var(--mut);font-size:13px}
+.bar .track{flex:1;background:#0d1320;border-radius:6px;height:22px;overflow:hidden} .bar .fill{height:100%;background:var(--acc);border-radius:6px}
+.bar .val{width:42px;text-align:right;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;margin-top:8px} th,td{border:1px solid var(--line);padding:7px 9px;text-align:center;font-size:13px}
+th{background:#0d1320;color:var(--mut)} .matrix td{background:#0d1320}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:12px}
+.t-core{background:rgba(77,163,255,.18);color:var(--acc)} .t-resi{background:rgba(62,207,142,.18);color:var(--ok)}
+.t-svc{background:rgba(255,180,84,.18);color:var(--warn)}
+.q{background:#0d1320;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:10px 0}
+.q .qt{font-weight:600;margin-bottom:6px} .opt{color:var(--mut);font-size:13px}
+.note{color:var(--mut);font-size:12px;border-left:3px solid var(--acc);padding-left:10px;margin:8px 0}
+.badge{font-size:12px;padding:2px 8px;border-radius:6px;background:#0d1320;color:var(--mut)}
+.live{background:rgba(62,207,142,.15);color:var(--ok)} .todo{background:rgba(255,180,84,.15);color:var(--warn)}
+</style></head><body>
+<header><h1>汉峪金谷 · P1·定量 交付物</h1>
+<div class="sub">问卷（可投放）+ 自动分析看板 · 阶段门控：有效样本≥300 且 三圈均衡 方可进 P2</div></header>
+<div class="wrap">
+
+<div class="card">
+<div class="note">本页上半为<b>可投放问卷</b>（复制到问卷星/腾讯问卷/Google Forms 即可发），下半为<b>自动分析看板</b>（回填 CSV 后按 schema 自动出图）。演示数据均为合成，仅展示分析逻辑。</div>
+<span class="badge live">P0·补数据 已完成</span> <span class="badge todo">P1·定量 进行中</span> <span class="badge todo">P2-P4 待启动</span>
+</div>
+
+<!-- ============ 问卷 ============ -->
+<div class="card"><h2>一、可投放问卷（5 段）</h2>
+<div class="note">分群维度来自 P0 三圈模型；需求项对齐空白清单 H1-H3（午间餐/托育/夜经济）。投放渠道见底部说明。</div>
+
+<h3>S1 · 基础分群（用于交叉分析）</h3>
+<div class="q"><div class="qt">Q1. 您当前与汉峪金谷的关系？</div><div class="opt">A 核心通勤圈（在此办公/工作）　B 居住圈（在此居住）　C 服务流动圈（办事/消费/通勤经过）</div></div>
+<div class="q"><div class="qt">Q2. 您的角色？</div><div class="opt">企业员工 / 企业管理者 / 自由职业 / 商户 / 居民 / 其他</div></div>
+<div class="q"><div class="qt">Q3. 是否有 0–12 岁子女需照料？</div><div class="opt">有娃 / 无娃</div></div>
+<div class="q"><div class="qt">Q4. 年龄段</div><div class="opt">22–28 / 29–35 / 36–45 / 46+</div></div>
+<div class="q"><div class="qt">Q5. 主要到访时段（可多选）</div><div class="opt">早通勤 / 午间 / 下午 / 晚办公 / 夜间 / 周末</div></div>
+
+<h3>S2 · 配套需求强度（5 点量表：1=完全不需要 5=非常需要）</h3>
+<div class="note">H1 托育 / H2 夜经济 / H3 午间餐 为重点验证项，已加粗。</div>
+<div class="q"><div class="qt"><b>Q6. 午间性价比餐（¥15–30，出餐快）</b></div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt"><b>Q7. 托育 / 临时看护（0–12岁，工作日白天）</b></div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt"><b>Q8. 夜经济 / 深夜食堂（20:00 后餐饮）</b></div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt">Q9. 健身 / 运动空间</div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt">Q10. 药店 / 诊所（日常医疗）</div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt">Q11. 咖啡 / 轻社交空间</div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt">Q12. 停车（充足/便宜）</div><div class="opt">1 2 3 4 5</div></div>
+<div class="q"><div class="qt">Q13. 便利店 / 生鲜</div><div class="opt">1 2 3 4 5</div></div>
+
+<h3>S3 · 场景化支付意愿</h3>
+<div class="q"><div class="qt">Q14. 可接受午间套餐客单价？</div><div class="opt">¥15–20 / ¥21–30 / ¥31–40 / ¥40+</div></div>
+<div class="q"><div class="qt">Q15. 若提供托育，可接受月费？</div><div class="opt">¥2000内 / ¥2000–3500 / ¥3500–5000 / ¥5000+</div></div>
+<div class="q"><div class="qt">Q16. 夜间消费频次？</div><div class="opt">几乎不 / 每周1次 / 每周2–3次 / 几乎每晚</div></div>
+
+<h3>S4 · 痛点（JTBD 开放题）</h3>
+<div class="q"><div class="qt">Q17. 在汉峪金谷，您最想被解决的一个不便？</div><div class="opt">（开放文本）</div></div>
+
+<h3>S5 · 深访招募（供给 P2 样本）</h3>
+<div class="q"><div class="qt">Q18. 是否愿意参加 30 分钟深度访谈（有小额礼品）？</div><div class="opt">愿意（留微信/手机）/ 暂不愿意</div></div>
+</div>
+
+<!-- ============ 看板 ============ -->
+<div class="card"><h2>二、自动分析看板（演示数据）</h2>
+<div class="note">真实投放后，将问卷导出 CSV 按 <code>p1_survey_template.csv</code> 列结构回填，脚本即可重算下列所有图。当前为合成演示。</div>
+
+<h3>① 需求排序（整体均值，1–5）</h3>
+<div id="rank"></div>
+
+<h3>② 三圈 × 需求 均值矩阵</h3>
+<div class="matrix" id="matrix"></div>
+
+<h3>③ 关键空白验证（H1–H3）</h3>
+<table><tr><th>假设</th><th>需求项</th><th>整体均值</th><th>缺口感知%</th><th>当前证据</th></tr>
+<tr><td>H3</td><td>午间性价比餐</td><td>3.02</td><td>71%</td><td><span class="tag t-core">待P1复核</span></td></tr>
+<tr><td>H1</td><td>托育</td><td>3.21</td><td>63%</td><td><span class="tag t-core">待P1复核</span></td></tr>
+<tr><td>H2</td><td>夜经济/深夜食堂</td><td>3.24</td><td>58%</td><td><span class="tag t-core">待P1复核</span></td></tr>
+</table>
+
+<h3>④ 有娃 vs 无娃 · 托育需求（H1 强验证）</h3>
+<div id="kid"></div>
+
+<h3>⑤ 阶段门控自检</h3>
+<table><tr><th>门控项</th><th>要求</th><th>当前（演示）</th><th>状态</th></tr>
+<tr><td>有效样本</td><td>≥300</td><td>360（演示）</td><td><span class="tag t-core">演示未达标</span></td></tr>
+<tr><td>三圈均衡</td><td>核心:居住:流动 ≈ 5:3:2 且各≥60</td><td>180:90:90</td><td><span class="tag t-resi">演示偏核</span></td></tr>
+</table>
+<div class="note">门控不通过→回炉补样，禁止进 P2。</div>
+</div>
+
+<!-- ============ 投放与回填说明 ============ -->
+<div class="card"><h2>三、投放渠道 & 数据回填</h2>
+<div class="q"><div class="qt">取样渠道（你主导）</div><div class="opt">① 楼宇物业/招商联合推送（用 P0 产出的免费洞察换准入）；② 企业 HR 群/工会；③ 午间食堂/便利店扫码；④ 商圈地推+小礼品；⑤ 业主群。</div></div>
+<div class="q"><div class="qt">AI 侧自动化的部分</div><div class="opt">问卷生成(已给) / 导出清洗 / 交叉分析(本看板) / 开放题编码 / 产出「需求排序」与 P2 招募名单。</div></div>
+<div class="q"><div class="qt">回填方式</div><div class="opt">导出 CSV → 对齐 <code>p1_survey_template.csv</code> 列 → 重跑 <code>gen_p1.py</code> 的看板段（或接你的分析管道）→ 更新本页数据。</div></div>
+</div>
+
+</div>
+<script>
+const D = {"needs": ["午间性价比餐", "托育", "夜经济/深夜食堂", "健身", "药店/诊所", "咖啡社交", "停车", "便利店"], "circle": {"core": [3.35, 3.11, 3.81, 3.0, 3.65, 3.41, 2.98, 3.61], "resi": [2.36, 2.99, 2.41, 2.45, 2.98, 3.62, 2.5, 2.66], "svc": [3.03, 3.61, 2.94, 2.61, 3.66, 1.98, 3.45, 2.42], "overall": [3.02, 3.21, 3.24, 2.77, 3.49, 3.11, 2.98, 3.08]}, "n": {"core": 180, "resi": 90, "svc": 90}, "kid_tutoring": {"有娃": 4.6, "无娃": 2.1}, "gap_pct": {"午间性价比餐": 71, "托育": 63, "夜经济/深夜食堂": 58, "健身": 34, "药店/诊所": 22, "咖啡社交": 41, "停车": 49, "便利店": 15}};
+// ① 需求排序
+(function(){
+  const wrap=document.getElementById('rank');
+  D.needs.map((n,i)=>({n,v:D.circle.overall[i]}))
+    .sort((a,b)=>b.v-a.v)
+    .forEach(d=>{
+      const row=document.createElement('div');row.className='bar';
+      row.innerHTML=`<span class="lab">${d.n}</span><span class="track"><span class="fill" style="width:${d.v/5*100}%"></span></span><span class="val">${d.v}</span>`;
+      wrap.appendChild(row);
+    });
+})();
+// ② 矩阵
+(function(){
+  const el=document.getElementById('matrix');
+  let h='<table><tr><th>需求\圈层</th><th>核心通勤</th><th>居住</th><th>服务流动</th></tr>';
+  D.needs.forEach((n,i)=>{
+    h+=`<tr><td>${n}</td><td>${D.circle.core[i]}</td><td>${D.circle.resi[i]}</td><td>${D.circle.svc[i]}</td></tr>`;
+  });
+  h+='</table>';el.innerHTML=h;
+})();
+// ④ 有娃vs无娃
+(function(){
+  const el=document.getElementById('kid');const k=D.kid_tutoring;
+  [['有娃',k['有娃']],['无娃',k['无娃']]].forEach(([lab,v])=>{
+    const row=document.createElement('div');row.className='bar';
+    row.innerHTML=`<span class="lab">${lab}</span><span class="track"><span class="fill" style="width:${v/5*100}%;background:var(--warn)"></span></span><span class="val">${v}</span>`;
+    el.appendChild(row);
+  });
+})();
+</script></body></html>
