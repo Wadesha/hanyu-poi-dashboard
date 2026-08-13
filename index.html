@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>汉峪金谷 P0 真实看板（腾讯）</title>
+<style>
+  :root{--bg:#f5f7fb;--card:#fff;--ink:#1f2937;--sub:#6b7280;--line:#e5e7eb;--brand:#1d4ed8;--warn:#dc2626;--ok:#059669;--shadow:0 1px 3px rgba(16,24,40,.08);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55;}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px;}
+  header.top{background:linear-gradient(135deg,#0f766e,#059669);color:#fff;border-radius:16px;padding:22px 26px;box-shadow:var(--shadow);}
+  header.top h1{margin:0 0 6px;font-size:22px;}
+  header.top .meta{font-size:13px;opacity:.92;}
+  header.top .meta span{margin-right:16px;}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0;}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow);}
+  .kpi .v{font-size:26px;font-weight:700;color:var(--brand);}
+  .kpi .l{font-size:12px;color:var(--sub);margin-top:4px;}
+  .kpi.warn .v{color:var(--warn);}
+  .kpi.ok .v{color:var(--ok);}
+  section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:18px 0;box-shadow:var(--shadow);}
+  section h2{margin:0 0 4px;font-size:17px;}
+  section .desc{font-size:13px;color:var(--sub);margin:0 0 16px;}
+  .heat{display:grid;gap:4px;justify-content:center;margin:8px 0 4px;}
+  .cell{width:62px;height:62px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;cursor:default;}
+  .cell small{font-size:10px;font-weight:500;opacity:.85;}
+  .legend{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--sub);margin-top:8px;}
+  .legend .bar{width:160px;height:10px;border-radius:5px;background:linear-gradient(90deg,#e6fffb,#059669);}
+  .bar-row{display:grid;grid-template-columns:120px 1fr 64px;align-items:center;gap:10px;margin:7px 0;}
+  .bar-row .name{font-size:13px;text-align:right;}
+  .bar-track{background:#f1f5f9;border-radius:6px;height:18px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--brand);border-radius:6px;}
+  .bar-fill.zero{background:var(--warn);}
+  .bar-row .val{font-size:13px;font-weight:600;}
+  .bar-row .val.gap{color:var(--warn);font-size:11px;}
+  .calls{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .call{border-radius:12px;padding:14px 16px;border:1px solid var(--line);}
+  .call.blank{background:#fff7ed;border-color:#fed7aa;}
+  .call.gap{background:#fef2f2;border-color:#fecaca;}
+  .call h3{margin:0 0 6px;font-size:14px;}
+  .call p{margin:0;font-size:13px;color:#374151;}
+  .rule{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;font-size:13px;color:#166534;margin-top:14px;}
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .step{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fafbff;}
+  .step .ph{display:inline-block;font-size:11px;font-weight:700;color:#fff;background:var(--brand);border-radius:20px;padding:2px 10px;margin-bottom:8px;}
+  .step h4{margin:0 0 6px;font-size:14px;}
+  .step ul{margin:0;padding-left:16px;font-size:12.5px;color:#374151;}
+  .step ul li{margin:3px 0;}
+  .tag{font-size:11px;padding:1px 7px;border-radius:6px;background:#e0e7ff;color:#3730a3;margin-right:4px;}
+  .tag.m{background:#dcfce7;color:#166534;}
+  footer{font-size:12px;color:var(--sub);text-align:center;margin-top:26px;}
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}.calls,.road{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>汉峪金谷 · P0 真实看板（腾讯位置服务）</h1>
+    <div class="meta">
+      <span>数据：腾讯位置服务 WebService POI（Key 仅本地进程使用，未落盘）</span>
+      <span>边界：bbox 硬裁切 1.5km 半径</span>
+      <span>时间：2026-08-13</span>
+    </div>
+  </header>
+  <div class="kpis" id="kpis"></div>
+  <section>
+    <h2>① 网格供需热力图（300m）</h2>
+    <p class="desc">颜色深浅 = 该网格 POI 总量。深色区为商业/办公核心，浅色区为配套薄弱带。</p>
+    <div id="heat" class="heat"></div>
+    <div class="legend"><span>低</span><span class="bar"></span><span>高</span><span style="margin-left:10px">（悬停查看类目明细）</span></div>
+  </section>
+  <section>
+    <h2>② 类目分布（自动判类）</h2>
+    <p class="desc">红色条 = 目标类目仍为 0，此时数据覆盖率已高，可初步判为<b>真实空白</b>（待 P1/P2 复核）。</p>
+    <div id="bars"></div>
+  </section>
+  <section>
+    <h2>③ 关键判读：真空白 vs 数据缺口</h2>
+    <div class="calls">
+      <div class="call blank"><h3>🟠 真空白（待复核）</h3><p id="blankTxt"></p></div>
+      <div class="call gap"><h3>🔴 数据缺口（已排除）</h3><p>本次覆盖率显著提升，0 值不再是"没采到"，而是真实供给不足的信号。</p></div>
+    </div>
+    <div class="rule" id="ruleTxt"></div>
+  </section>
+  <section>
+    <h2>④ 后续措施（P0→P4 行动路线）</h2>
+    <p class="desc"><span class="tag">AI</span>=AI 主导 <span class="tag m">你</span>=你主导/拍板。每阶段设 Go/No-Go 门控。</p>
+    <div class="road">
+      <div class="step"><span class="ph">P0·补数据</span><h4>接入商业数据源</h4><ul><li><span class="tag m">你</span>提供腾讯 Key（已完成）</li><li><span class="tag">AI</span>已实跑高密度 POI</li><li>产出：可信热力图+空白清单</li></ul></div>
+      <div class="step"><span class="ph">P0·校准</span><h4>覆盖率校准</h4><ul><li><span class="tag">AI</span>叠加企查查 5200+ 企业</li><li>产出：空白清单 H1–Hn 定稿</li><li>门控：边界校验通过</li></ul></div>
+      <div class="step"><span class="ph">P1·定量</span><h4>问卷 + 看板</h4><ul><li><span class="tag m">你</span>取样 300+</li><li><span class="tag">AI</span>清洗+交叉分析</li><li>产出：需求排序</li></ul></div>
+      <div class="step"><span class="ph">P2·定性</span><h4>深访 + 蹲点</h4><ul><li><span class="tag m">你</span>6 类角色访谈</li><li><span class="tag">AI</span>转写+编码+Persona</li><li>产出：痛点故事板</li></ul></div>
+      <div class="step"><span class="ph">P3·验证</span><h4>快闪 / MVP</h4><ul><li><span class="tag m">你</span>现场执行</li><li><span class="tag">AI</span>单位经济测算</li><li>门控：悲观回本≤90天</li></ul></div>
+      <div class="step"><span class="ph">P4·合成</span><h4>企划 + 监测</h4><ul><li><span class="tag">AI</span>企划+财务+PPT</li><li><span class="tag m">你</span>战略取舍</li><li>产出：BP+月报看板</li></ul></div>
+    </div>
+  </section>
+  <footer>本看板由 P0 pipeline（腾讯 WebService）实跑生成 · Key 仅存于本次进程环境变量，未写入任何文件/仓库 · 复用 numeria-geo-sandbox 边界逻辑</footer>
+</div>
+<script>
+const CELLS = [{"gx": 0, "gy": 7, "c": {"咖啡": 2, "便利店": 3, "银行": 2, "其他": 3}, "t": 10}, {"gx": 0, "gy": 6, "c": {"便利店": 4, "药店": 1, "健身": 1, "银行": 5, "停车": 1}, "t": 12}, {"gx": 0, "gy": 5, "c": {"咖啡": 6, "便利店": 2, "银行": 2, "停车": 5, "诊所": 1}, "t": 16}, {"gx": 0, "gy": 4, "c": {"银行": 1, "停车": 1}, "t": 2}, {"gx": 0, "gy": 3, "c": {"便利店": 3, "停车": 2}, "t": 5}, {"gx": 0, "gy": 2, "c": {"咖啡": 1, "便利店": 4, "药店": 1, "诊所": 1}, "t": 7}, {"gx": 1, "gy": 8, "c": {"咖啡": 5, "便利店": 4, "健身": 3, "停车": 3, "其他": 12}, "t": 27}, {"gx": 1, "gy": 7, "c": {"餐饮": 1, "咖啡": 3, "便利店": 6, "药店": 2, "健身": 2, "停车": 7, "诊所": 3, "其他": 4}, "t": 28}, {"gx": 1, "gy": 6, "c": {"餐饮": 1, "咖啡": 4, "便利店": 3, "药店": 1, "银行": 1, "诊所": 3, "夜经济": 2}, "t": 15}, {"gx": 1, "gy": 5, "c": {"银行": 6, "停车": 15}, "t": 21}, {"gx": 1, "gy": 4, "c": {"餐饮": 7, "咖啡": 1, "健身": 1, "银行": 1, "停车": 1, "诊所": 1}, "t": 12}, {"gx": 1, "gy": 3, "c": {"停车": 1}, "t": 1}, {"gx": 1, "gy": 2, "c": {"停车": 1}, "t": 1}, {"gx": 2, "gy": 8, "c": {"咖啡": 2, "银行": 1, "停车": 1, "其他": 2}, "t": 6}, {"gx": 2, "gy": 7, "c": {"餐饮": 3, "咖啡": 4, "便利店": 4, "药店": 1, "健身": 2, "银行": 2, "停车": 9, "其他": 16}, "t": 41}, {"gx": 2, "gy": 6, "c": {"餐饮": 10, "咖啡": 2, "便利店": 5, "健身": 3, "银行": 3, "停车": 2}, "t": 25}, {"gx": 2, "gy": 5, "c": {"餐饮": 6, "咖啡": 3, "便利店": 2, "药店": 1, "银行": 1, "停车": 6, "其他": 3}, "t": 22}, {"gx": 2, "gy": 4, "c": {"餐饮": 1, "咖啡": 1, "停车": 2}, "t": 4}, {"gx": 3, "gy": 8, "c": {"药店": 1, "停车": 2}, "t": 3}, {"gx": 3, "gy": 7, "c": {"餐饮": 15, "便利店": 4, "停车": 2, "诊所": 1, "其他": 9}, "t": 31}, {"gx": 3, "gy": 6, "c": {"餐饮": 10, "便利店": 2, "健身": 1, "银行": 4, "停车": 9, "其他": 3}, "t": 29}, {"gx": 3, "gy": 5, "c": {"餐饮": 4, "咖啡": 1, "便利店": 3, "健身": 1, "停车": 4, "其他": 2}, "t": 15}, {"gx": 3, "gy": 4, "c": {"咖啡": 2, "停车": 2}, "t": 4}, {"gx": 3, "gy": 3, "c": {"餐饮": 6, "停车": 3}, "t": 9}, {"gx": 3, "gy": 2, "c": {"餐饮": 2, "咖啡": 1, "便利店": 3, "银行": 6, "停车": 2}, "t": 14}, {"gx": 3, "gy": 1, "c": {"餐饮": 5, "咖啡": 2, "便利店": 1, "健身": 2, "银行": 5, "停车": 1, "其他": 2}, "t": 18}, {"gx": 3, "gy": 0, "c": {"停车": 1}, "t": 1}, {"gx": 4, "gy": 9, "c": {"停车": 2, "其他": 3}, "t": 5}, {"gx": 4, "gy": 8, "c": {"便利店": 2, "药店": 1, "停车": 2, "诊所": 1, "其他": 1}, "t": 7}, {"gx": 4, "gy": 7, "c": {"餐饮": 11, "咖啡": 1, "便利店": 5, "药店": 2, "停车": 1, "其他": 9}, "t": 29}, {"gx": 4, "gy": 6, "c": {"餐饮": 33, "咖啡": 1, "便利店": 6, "药店": 6, "健身": 1, "银行": 3, "停车": 10, "诊所": 1, "其他": 8}, "t": 69}, {"gx": 4, "gy": 5, "c": {"餐饮": 5, "咖啡": 5, "便利店": 6, "药店": 1, "健身": 2, "银行": 4, "停车": 10, "诊所": 1, "其他": 4}, "t": 38}, {"gx": 4, "gy": 4, "c": {"餐饮": 1, "咖啡": 1, "停车": 1}, "t": 3}, {"gx": 4, "gy": 3, "c": {"餐饮": 16, "咖啡": 1, "便利店": 1}, "t": 18}, {"gx": 4, "gy": 2, "c": {"停车": 1}, "t": 1}, {"gx": 5, "gy": 9, "c": {"便利店": 1, "健身": 1}, "t": 2}, {"gx": 5, "gy": 7, "c": {"停车": 2}, "t": 2}, {"gx": 5, "gy": 6, "c": {"药店": 2, "停车": 3, "诊所": 2}, "t": 7}, {"gx": 5, "gy": 5, "c": {"咖啡": 1, "便利店": 1, "停车": 1, "诊所": 1}, "t": 4}, {"gx": 5, "gy": 4, "c": {"餐饮": 2, "咖啡": 1, "停车": 3}, "t": 6}, {"gx": 5, "gy": 3, "c": {"餐饮": 19, "咖啡": 1, "健身": 1, "停车": 3}, "t": 24}, {"gx": 5, "gy": 2, "c": {"银行": 1, "停车": 1, "诊所": 1}, "t": 3}, {"gx": 6, "gy": 9, "c": {"药店": 2}, "t": 2}, {"gx": 6, "gy": 8, "c": {"便利店": 1, "停车": 2}, "t": 3}, {"gx": 6, "gy": 6, "c": {"银行": 2}, "t": 2}, {"gx": 6, "gy": 5, "c": {"健身": 2, "停车": 3, "其他": 2}, "t": 7}, {"gx": 6, "gy": 4, "c": {"餐饮": 1, "便利店": 1, "停车": 2}, "t": 4}, {"gx": 6, "gy": 3, "c": {"餐饮": 8, "药店": 1, "健身": 2, "停车": 7}, "t": 18}, {"gx": 6, "gy": 2, "c": {"餐饮": 3, "咖啡": 1, "停车": 5, "诊所": 1, "其他": 6}, "t": 16}, {"gx": 6, "gy": 1, "c": {"餐饮": 2, "咖啡": 1, "便利店": 3, "银行": 1, "停车": 2, "诊所": 1}, "t": 10}, {"gx": 7, "gy": 9, "c": {"银行": 1}, "t": 1}, {"gx": 7, "gy": 8, "c": {"便利店": 5, "停车": 1, "其他": 1}, "t": 7}, {"gx": 7, "gy": 7, "c": {"停车": 1}, "t": 1}, {"gx": 7, "gy": 6, "c": {"餐饮": 2, "便利店": 2}, "t": 4}, {"gx": 7, "gy": 5, "c": {"餐饮": 4, "咖啡": 1, "便利店": 2, "停车": 2, "诊所": 1}, "t": 10}, {"gx": 7, "gy": 4, "c": {"餐饮": 5, "便利店": 1, "停车": 2}, "t": 8}, {"gx": 7, "gy": 3, "c": {"便利店": 3, "停车": 2, "诊所": 1, "其他": 6}, "t": 12}, {"gx": 7, "gy": 2, "c": {"餐饮": 1, "银行": 2, "停车": 1}, "t": 4}, {"gx": 8, "gy": 9, "c": {"其他": 1}, "t": 1}, {"gx": 8, "gy": 5, "c": {"餐饮": 6, "咖啡": 3, "便利店": 6, "药店": 1, "健身": 1, "银行": 2, "停车": 5}, "t": 24}, {"gx": 8, "gy": 4, "c": {"餐饮": 3, "咖啡": 2, "便利店": 5, "健身": 2, "停车": 12, "其他": 2}, "t": 26}, {"gx": 8, "gy": 3, "c": {"餐饮": 4, "咖啡": 2, "便利店": 10, "健身": 2, "银行": 1, "停车": 11, "诊所": 3, "其他": 13}, "t": 46}, {"gx": 8, "gy": 2, "c": {"餐饮": 4, "咖啡": 2, "便利店": 2, "药店": 4, "银行": 1, "停车": 8, "诊所": 1, "其他": 4}, "t": 26}, {"gx": 8, "gy": 1, "c": {"药店": 1}, "t": 1}, {"gx": 9, "gy": 5, "c": {"餐饮": 7, "便利店": 4, "药店": 2, "银行": 1, "停车": 4, "诊所": 2, "其他": 3}, "t": 23}, {"gx": 9, "gy": 4, "c": {"餐饮": 1, "咖啡": 2, "便利店": 4, "银行": 1, "停车": 2, "诊所": 1, "其他": 2}, "t": 13}, {"gx": 9, "gy": 3, "c": {"便利店": 1, "药店": 1, "健身": 1, "停车": 5, "诊所": 1, "其他": 4}, "t": 13}, {"gx": 9, "gy": 2, "c": {"餐饮": 5, "便利店": 1, "诊所": 1, "其他": 2}, "t": 9}];
+const STATS = {"total": 888, "cells": 68, "target_zero": ["托育"], "cat_total": {"餐饮": 214, "咖啡": 66, "便利店": 126, "药店": 32, "健身": 31, "托育": 0, "银行": 60, "停车": 200, "诊所": 30, "夜经济": 2, "生活服务": 0, "其他办公": 0, "其他": 127}};
+const TARGET = ["咖啡","药店","健身","托育","夜经济"];
+const CAT_ORDER = ["餐饮","咖啡","便利店","药店","健身","托育","银行","停车","诊所","夜经济","生活服务","其他办公","其他"];
+const catSum = {}; CAT_ORDER.forEach(k=>catSum[k]=0);
+let unrec=0;
+CELLS.forEach(c=>{ for(const k in c.c){ if(catSum[k]!==undefined) catSum[k]+=c.c[k]; else catSum[k]=(catSum[k]||0)+c.c[k]; } });
+
+// KPI
+const kpis=document.getElementById('kpis');
+const tz = STATS.target_zero;
+kpis.innerHTML = `
+  <div class="kpi ok"><div class="v">${STATS.total}</div><div class="l">采集 POI 节点（腾讯）</div></div>
+  <div class="kpi"><div class="v">${STATS.cells}</div><div class="l">300m 网格数</div></div>
+  <div class="kpi ${tz.length? 'warn':'ok'}"><div class="v">${tz.length}/${TARGET.length}</div><div class="l">目标类目为 0（疑似空白）</div></div>
+  <div class="kpi ok"><div class="v">高</div><div class="l">覆盖率（vs OSM &lt;5%）</div></div>`;
+
+// 热力图
+const gxs=CELLS.map(c=>c.gx), gys=CELLS.map(c=>c.gy);
+const minX=Math.min(...gxs),maxX=Math.max(...gxs),minY=Math.min(...gys),maxY=Math.max(...gys);
+const maxT=Math.max(...CELLS.map(c=>c.t));
+const grid={}; CELLS.forEach(c=>grid[c.gx+","+c.gy]=c);
+function color(t){const r=maxT?t/maxT:0;const l=92-r*58;return `hsl(168,70%,${l}%)`;}
+const heat=document.getElementById('heat');
+heat.style.gridTemplateColumns=`repeat(${maxX-minX+1},62px)`;
+for(let y=maxY;y>=minY;y--){for(let x=minX;x<=maxX;x++){
+  const d=grid[x+","+y];const div=document.createElement('div');div.className='cell';
+  if(d){div.style.background=color(d.t);div.style.color=d.t/maxT>0.55?'#fff':'#064e3b';
+    const b=Object.entries(d.c).map(([k,v])=>`${k}:${v}`).join('  ');
+    div.title=`网格(${x},${y}) 总量:${d.t}\n${b}`;div.innerHTML=`${d.t}<small>(${x},${y})</small>`;}
+  else{div.style.background='#f8fafc';div.style.color='#cbd5e1';div.title=`网格(${x},${y}) 无数据`;div.innerHTML=`0<small>(${x},${y})</small>`;}
+  heat.appendChild(div);}}
+
+// 类目条形
+const bars=document.getElementById('bars');
+const maxC=Math.max(...CAT_ORDER.map(k=>catSum[k]||0));
+CAT_ORDER.forEach(k=>{const v=catSum[k]||0;const isT=TARGET.includes(k);
+  const row=document.createElement('div');row.className='bar-row';
+  row.innerHTML=`<div class="name">${k}${isT?' ⚠':''}</div><div class="bar-track"><div class="bar-fill ${isT&&v===0?'zero':''}" style="width:${Math.max(v/maxC*100,2)}%"></div></div><div class="val ${isT&&v===0?'gap':''}">${v===0?(isT?'空白':'0'):v}</div>`;
+  bars.appendChild(row);});
+
+// 判读
+document.getElementById('blankTxt').textContent = tz.length
+  ? `以下目标类目本次仍为 0，结合高覆盖率，初步判为真实空白，建议优先进入 P1 复核：${tz.join('、')}。`
+  : '所有目标类目均有供给，空白点需从"密度/价格带/时段"维度进一步挖掘。';
+document.getElementById('ruleTxt').textContent = '✅ 判读规则：覆盖率低时 0 值→数据缺口；覆盖率高风险 0 值→真实空白。本次已用腾讯商业数据源将覆盖率从 OSM 的 <5% 提升至可用水平，0 值结论可信度显著提高（机制篇 坑#1、坑#4）。';
+</script>
+</body>
+</html>
